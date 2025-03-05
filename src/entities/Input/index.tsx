@@ -1,4 +1,3 @@
-"use client";
 
 import React, { forwardRef, useState } from "react";
 import { twMerge } from "tailwind-merge";

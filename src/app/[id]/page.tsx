@@ -45,15 +45,6 @@ export default function DetailPage() {
       });
     }
   }, [id, router]);
-  useEffect(() => {
-    if (id && setTemplate) {
-      if (template.id === id) return;
-      const localTemplate = localStorage.getItem("template" + id);
-      if (localTemplate) {
-        setTemplate(JSON.parse(localTemplate));
-      } 
-    }
-  }, [id, router, setTemplate, template.id]);
   return (
     <>
       <div className="sticky top-0 z-10 bg-white border-b border-gray-200 py-2">
