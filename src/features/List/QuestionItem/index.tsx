@@ -16,7 +16,10 @@ export default function QuestionItem({
       <div className="flex flex-col">
         <div>{template.title}</div>
         <div className="text-xs text-gray-500">
-          마지막 수정일: {template.updatedAt}
+          마지막 수정일: {template.updatedAt.replace("T", " ").substring(0, 19)}
+        </div>
+        <div className="text-xs text-gray-500">
+          생성일: {template.createdAt.replace("T", " ").substring(0, 19)}
         </div>
       </div>
       <div className="flex items-center gap-2">

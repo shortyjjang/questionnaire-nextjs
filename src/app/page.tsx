@@ -13,7 +13,7 @@ const getLocalTemplates = async () => {
       const localTemplates = JSON.parse(
         localStorage.getItem("templates") || "[]"
       );
-      resolve(localTemplates.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+      resolve(localTemplates.sort((a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()));
     }, 0); // 비동기 처리로 렌더링 차단 방지
   });
 };

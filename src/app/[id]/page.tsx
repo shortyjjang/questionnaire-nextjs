@@ -1,7 +1,7 @@
 "use client";
 import Button from "@/entities/Button";
 import { QuestionTemplate } from "@/type";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import DetailViewer from "@/features/Detail/Viewer";
 import { useParams, useRouter } from "next/navigation";
 // Lazy Loading으로 로컬스토리지 데이터 불러오기
@@ -27,14 +27,14 @@ export default function DetailPage() {
     {} as QuestionTemplate
   );
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if(template.questions.some((question) => question.required && !question.answer)) {
-      alert("모든 질문을 답변해주세요.");
+      alert("필수 질문을 답변해주세요.");
       return;
     }
     alert("제출되었습니다.");
     router.push("/");
-  };
+  }, [template, router]);
 
   // Lazy Loading으로 로컬스토리지 데이터 가져오기
   useEffect(() => {
