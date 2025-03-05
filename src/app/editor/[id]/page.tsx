@@ -1,5 +1,5 @@
 "use client";
-import Question from "@/features/Detail";
+import Question from "@/features/Detail/Editor";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 

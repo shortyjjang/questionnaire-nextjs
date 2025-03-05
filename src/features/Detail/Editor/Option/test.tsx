@@ -66,4 +66,11 @@ describe('Option 컴포넌트 테스트', () => {
         expect(updatedInputs[0]).toHaveValue('테스트 옵션 2');
         expect(updatedInputs[1]).toHaveValue('테스트 옵션 변경');
     });
+    //옵션 삭제
+    test('옵션 삭제 테스트', () => {
+        render(<OptionList initialItems={mockItems} type="radio" questionIndex={0} />);
+        const deleteButtons = screen.getAllByRole("button", { name: "옵션 삭제" });
+        fireEvent.click(deleteButtons[0]);
+        expect(screen.queryByText('테스트 옵션')).not.toBeInTheDocument();
+    });
 });

@@ -2,7 +2,7 @@
 import useDragging from "@/hooks/useDragging";
 import { createContext, useContext, useId } from "react";
 import React from "react";
-import QuestionItem from "../QuestionItem";
+import QuestionItem from "./QuestionItem";
 import { QuestionItemType } from "@/type";
 
 type QuestionListContextType = {

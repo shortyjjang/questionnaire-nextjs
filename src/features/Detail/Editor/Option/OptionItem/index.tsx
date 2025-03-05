@@ -4,7 +4,7 @@ import Input from "@/entities/Input";
 import { twMerge } from "tailwind-merge";
 import Radio from "@/entities/Radio";
 import Checkbox from "@/entities/Checkbox";
-import { useDetailProvider } from "@/features/Detail";
+import { useDetailProvider } from "@/features/Detail/Editor";
 export default function OptionItem({
   item,
   index,
@@ -68,7 +68,7 @@ export default function OptionItem({
         placeholder="옵션 추가"
       />
       {draggable && (
-        <button aria-label="삭제" className="relative rotate-45 cursor-pointer" onClick={handleDeleteOption}>
+        <button aria-label="옵션 삭제" className="relative rotate-45 cursor-pointer" onClick={handleDeleteOption}>
           <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[2px] h-5 bg-gray-500 rounded-xs" />
           <span className="w-5 h-[2px] bg-gray-500 block rounded-xs" />
         </button>

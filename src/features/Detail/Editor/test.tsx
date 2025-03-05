@@ -36,4 +36,11 @@ describe("Question 컴포넌트 테스트", () => {
       expect(checkboxes.length).toBe(4);
     });
   });
+
+  test("QuestionList 컴포넌트 렌더링 테스트", () => {
+    render(<Question id={id} />);
+    expect(screen.getByRole("list")).toBeInTheDocument();
+  });
+
+  
 });

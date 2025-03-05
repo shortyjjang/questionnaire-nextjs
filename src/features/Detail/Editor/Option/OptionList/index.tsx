@@ -2,7 +2,7 @@
 import useDragging from "@/hooks/useDragging";
 import { createContext, useContext, useId } from "react";
 import React from "react";
-import { useDetailProvider } from "@/features/Detail";
+import { useDetailProvider } from "@/features/Detail/Editor";
 import OptionItem from "../OptionItem";
 import { QuestionOption } from "@/type";
 

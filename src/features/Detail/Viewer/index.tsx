@@ -15,7 +15,7 @@ export default function QuestionViewer({
   return (
     <div className="flex flex-col gap-4 max-w-screen-lg mx-auto p-4">
       <div className="bg-white rounded-lg p-4 border-t-4 border-blue-500 w-full flex flex-col gap-2">
-        <h1
+        <h2
           className="text-2xl font-bold whitespace-pre-wrap"
           dangerouslySetInnerHTML={{ __html: template.title }}
         />
@@ -31,12 +31,12 @@ export default function QuestionViewer({
             className="bg-white rounded-lg p-4 border-t-4 border-blue-500 flex flex-col gap-2"
           >
             <div className="flex items-center gap-2">
-              <h2
+              <h3
                 className="text-lg font-bold whitespace-pre-wrap"
                 dangerouslySetInnerHTML={{ __html: question.question }}
               />
               {question.required && (
-                <span className="text-red-500" arial-label="필수 질문">
+                <span className="text-red-500" aria-label="필수 질문">
                   *
                 </span>
               )}
@@ -52,6 +52,7 @@ export default function QuestionViewer({
                 value={question?.answer || ""}
                 placeholder="답변을 입력해주세요."
                 className="w-full"
+                aria-label={question.required ? "필수 질문" : undefined}
                 onChange={(e) => {
                   setTemplate({
                     ...template,
@@ -67,6 +68,7 @@ export default function QuestionViewer({
                 value={question?.answer || ""}
                 placeholder="답변을 입력해주세요."
                 className="w-full"
+                aria-label={question.required ? "필수 질문" : undefined}
                 onChange={(e) => {
                   setTemplate({
                     ...template,
@@ -79,11 +81,12 @@ export default function QuestionViewer({
             )}
             {question.type === "select" && (
               <Select
-                options={question.options.map((option) => ({
+                options={(question.options || []).map((option) => ({
                   label: option.content,
                   value: option.id,
                 }))}
                 value={question.answer}
+                aria-label={question.required ? "필수 질문" : undefined}
                 onChange={(value) =>
                   setTemplate({
                     ...template,
@@ -95,11 +98,11 @@ export default function QuestionViewer({
               />
             )}
             {(question.type === "radio" || question.type === "checkbox") &&
-              question.options.map((option) => (
+              (question.options || []).map((option) => (
                 <div key={option.id}>
                   {question.type === "radio" ? (
                     <Radio
-                      value={question.answer}
+                      value={question.id}
                       onChange={(e) =>
                         setTemplate((prev) => ({
                           ...prev,
@@ -110,11 +113,14 @@ export default function QuestionViewer({
                           ),
                         }))
                       }
+                      checked={question.answer === option.id}
+                      aria-label={question.required ? "필수 질문" : undefined}
                       name={question.id}
+                      label={option.content}
                     />
                   ) : (
                     <Checkbox
-                      value={question.answer}
+                      value={option.id}
                       onChange={(e) =>
                         setTemplate((prev) => ({
                           ...prev,
@@ -125,7 +131,10 @@ export default function QuestionViewer({
                           ),
                         }))
                       }
+                      aria-label={question.required ? "필수 질문" : undefined}
                       name={question.id}
+                      label={option.content}
+                      checked={(question.answer || "").split(",").includes(option.id)}
                     />
                   )}
                 </div>

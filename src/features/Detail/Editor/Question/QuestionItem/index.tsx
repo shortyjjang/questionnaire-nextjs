@@ -2,12 +2,12 @@ import Switch from "@/entities/Switch";
 import { useEffect, useId, useRef, useState, useCallback, useMemo } from "react";
 import TextEditor from "@/entities/TextEditor";
 import Select from "@/entities/Select";
-import { useQuestionListContext } from "../QuesitonList";
+import { useQuestionListContext } from "..";
 import CopyIcon from "@/assets/icons/CopyIcon";
 import DeleteIcon from "@/assets/icons/DeleteIcon";
-import { useDetailProvider } from "@/features/Detail";
+import { useDetailProvider } from "@/features/Detail/Editor";
 import { QuestionItemType, QuestionType } from "@/type";
-import Option from "../Option";
+import Option from "@/features/Detail/Editor/Option";
 
 export default function QuestionItem({
   item,
@@ -93,10 +93,11 @@ export default function QuestionItem({
   return (
     <div className="bg-white rounded-lg p-4 focus-within:border-blue-500 focus-within:border-l-4">
       <button
-        className="block mx-auto w-fit p-1 cursor-grab"
+        className="block mx-auto w-fit p-1 cursor-grab move-question"
         draggable={true}
         onDragStart={() => handleDragStart(index)}
         onTouchStart={(e) => handleTouchStart(e, index)}
+        aria-label="질문 순서 변경"
       >
         <span className="block w-6 h-1.5 border-y-2 border-dotted border-gray-300" />
       </button>

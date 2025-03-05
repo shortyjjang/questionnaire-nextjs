@@ -1,41 +1,78 @@
 "use client";
-import React, { useEffect, useRef } from "react";
-import TextEditor from "@/entities/TextEditor";
-import QuestionList from "./QuesitonList";
-import { useDetailProvider } from "@/features/Detail";
 
-export default function QuestionEditor() {
-  const { template, setTemplate } = useDetailProvider();
-  const titleRef = useRef<HTMLDivElement | null>(null);
-  const descriptionRef = useRef<HTMLDivElement | null>(null);
+import { createContext, useContext, useEffect, useState } from "react";
+import { QuestionTemplate } from "@/type";
+import QuestionEditor from "./Question/QuestionEditor";
+import QuestionViewer from "../Viewer";
+import DetailHeader from "./Header";
+
+const initialTemplate: QuestionTemplate = {
+  title: "제목없는 설문지",
+  description: "",
+  questions: [
+    {
+      question: "",
+      description: "",
+      type: "text",
+      required: false,
+      options: [
+        {
+          id: new Date().getTime().toString(),
+          content: "",
+        },
+      ],
+      id: new Date().getTime().toString(),
+    },
+  ],
+  id: new Date().getTime().toString(),
+}
+
+// Lazy Loading으로 로컬스토리지 데이터 불러오기
+const getLocalTemplates = async (id: string) => {
+  return new Promise<QuestionTemplate>((resolve) => {
+    setTimeout(() => {
+      const localTemplates = localStorage.getItem("template"+id) ? JSON.parse(
+        localStorage.getItem("template"+id) || ""
+      ) : {
+        ...initialTemplate,
+        id: id,
+        title: "제목없는 설문지",
+      };
+      resolve(localTemplates);
+    }, 0); // 비동기 처리로 렌더링 차단 방지
+  });
+};
+
+const TemplateContext = createContext<{
+  template: QuestionTemplate;
+  setTemplate: React.Dispatch<React.SetStateAction<QuestionTemplate>>;
+  isEditMode: boolean;
+  setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+}>({
+  template: initialTemplate,
+  setTemplate: () => {},
+  isEditMode: true,
+  setIsEditMode: () => {},
+});
+
+export default function Question({ id }: { id?: string }) {
+  const [template, setTemplate] = useState<QuestionTemplate>(initialTemplate);
+  const [isEditMode, setIsEditMode] = useState(true);
+  // Lazy Loading으로 로컬스토리지 데이터 가져오기
   useEffect(() => {
-    if (titleRef.current) {
-      titleRef.current.innerHTML = template.title;
+    if (id) {
+      getLocalTemplates(id).then(setTemplate);
     }
-    if (descriptionRef.current) {
-      descriptionRef.current.innerHTML = template.description;
-    }
-  }, [template]);
+  }, [id]);
+
   return (
-    <div className="flex flex-col gap-4 max-w-screen-lg mx-auto py-4 px-4">
-      <div className="bg-white rounded-lg p-4 border-t-4 border-blue-500">
-        <TextEditor
-          ref={titleRef}
-          size="large"
-          className="font-bold"
-          value={template.title}
-          placeholder="설문지 제목"
-          onChange={(value) => setTemplate({ ...template, title: value })}
-        />
-        <TextEditor
-          ref={descriptionRef}
-          size="small"
-          value={template.description}
-          placeholder="설문지 설명"
-          onChange={(value) => setTemplate({ ...template, description: value })}
-        />
-      </div>
-      <QuestionList initialItems={template.questions} />
-    </div>
+    <TemplateContext.Provider value={{ template, setTemplate, isEditMode, setIsEditMode }}>
+      <DetailHeader />
+      {isEditMode ? <QuestionEditor /> : <QuestionViewer template={template} setTemplate={setTemplate} />}
+    </TemplateContext.Provider>
   );
+}
+
+export function useDetailProvider() {
+  return useContext(TemplateContext);
 }

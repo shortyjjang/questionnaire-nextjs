@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDetailProvider } from "@/features/Detail";
+import { useDetailProvider } from "@/features/Detail/Editor";
 import { useRouter } from "next/navigation";
 import Button from "@/entities/Button";
 import { twMerge } from "tailwind-merge";

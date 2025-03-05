@@ -1,8 +1,7 @@
 "use client";
 import Button from "@/entities/Button";
-import QuestionItem from "@/features/List/QuestionItem";
+import QuestionList from "@/features/List/QuestionList";
 import Search from "@/features/List/Search";
-import { saveToLocalStorageImmediately } from "@/lib/saveToLocalStorage";
 import { QuestionListType } from "@/type";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -50,16 +49,6 @@ export default function Home() {
     [templates, filterTemplates]
   );
 
-  //삭제
-  const handleDeleteTemplate = (id: string) => {
-    if (!confirm("삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.")) return;
-    const newTemplates = templates.filter((t) => t.id !== id);
-    if (saveToLocalStorageImmediately("templates", newTemplates)) {
-      localStorage.removeItem("template" + id);
-      setTemplates(newTemplates);
-    }
-  };
-
   // Lazy Loading으로 로컬스토리지 데이터 가져오기
   useEffect(() => {
     getLocalTemplates().then(setTemplates);
@@ -89,27 +78,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="mt-4 flex flex-col gap-4 mx-auto max-w-screen-lg">
-        {templates.length > 0 ? (
-          filteredTemplates.length > 0 ? (
-            filteredTemplates.map((template) => (
-              <QuestionItem
-                key={template.id}
-                template={template}
-                onDelete={() => handleDeleteTemplate(template.id)}
-              />
-            ))
-          ) : (
-            <div className="py-5 text-center text-gray-500">
-              검색 결과가 없습니다.
-            </div>
-          )
-        ) : (
-          <div className="py-5 text-center text-gray-500">
-            설문지가 없습니다.
-          </div>
-        )}
-      </div>
+      <QuestionList templates={templates} setTemplates={setTemplates} filteredTemplates={filteredTemplates} />
     </>
   );
 }
