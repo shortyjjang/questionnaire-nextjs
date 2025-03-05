@@ -14,7 +14,6 @@ export const saveToLocalStorage = (key: string, data: any, delay = DEFAULT_DEBOU
     debounceTimers[key] = setTimeout(() => {
       try {
         localStorage.setItem(key, JSON.stringify(data));
-        console.log(`${key} 데이터가 로컬 스토리지에 저장되었습니다.`);
         // 타이머 참조 제거
         delete debounceTimers[key];
       } catch (error) {
@@ -24,7 +23,6 @@ export const saveToLocalStorage = (key: string, data: any, delay = DEFAULT_DEBOU
         } else {
           alert("저장 중 오류가 발생했습니다.");
         }
-        console.error("로컬스토리지 저장 오류:", error);
         delete debounceTimers[key];
         return false;
       }
@@ -32,7 +30,9 @@ export const saveToLocalStorage = (key: string, data: any, delay = DEFAULT_DEBOU
 
     return true;
   } catch (error) {
-    console.error("디바운스 설정 중 오류:", error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("디바운스 설정 중 오류:", error);
+    }
     return false;
   }
 };
@@ -55,7 +55,9 @@ export const saveToLocalStorageImmediately = (key: string, data: any) => {
     } else {
       alert("저장 중 오류가 발생했습니다.");
     }
-    console.error("로컬스토리지 저장 오류:", error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("로컬스토리지 저장 오류:", error);
+    }
     return false;
   }
 };

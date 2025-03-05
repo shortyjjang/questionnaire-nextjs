@@ -62,7 +62,6 @@ export default function Home() {
 
   // Lazy Loading으로 로컬스토리지 데이터 가져오기
   useEffect(() => {
-    console.log("templates", templates);
     getLocalTemplates().then(setTemplates);
   }, []);
   return (
