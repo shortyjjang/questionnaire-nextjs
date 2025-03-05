@@ -1,36 +1,190 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 설문지 관리 애플리케이션
 
-## Getting Started
+이 애플리케이션은 사용자가 직접 설문지를 제작하고, 공유하고, 응답을 수집할 수 있는 웹 기반 설문조사 플랫폼입니다.
 
-First, run the development server:
+## 애플리케이션 아키텍처
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+이 프로젝트는 Next.js 15.2.0을 기반으로 하는 React 19 애플리케이션으로, 다음과 같은 구조로 이루어져 있습니다:
+
+```
+src/
+├── app/ - Next.js App Router 기반 페이지 구조
+├── assets/ - 이미지, 아이콘 등 정적 파일
+├── entities/ - 기본 UI 컴포넌트 (Button, Input, TextEditor 등)
+├── features/ - 기능별 컴포넌트
+│   ├── Detail/ - 설문지 제작 및 응답 기능
+│   │   ├── Editor/ - 설문지 제작
+│   │   ├── Viewer/ - 설문지 참여, 미리보기
+│   └── List/ - 설문지 목록 및 검색 기능
+├── hooks/ - 커스텀 훅
+├── lib/ - 공용으로 사용하는 ts파일
+└── type/ - TypeScript 타입 정의
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+이 아키텍처는 기능별로 코드를 분리하고, 재사용 가능한 컴포넌트를 분리하여 유지보수성과 확장성을 높이는 데 중점을 두고 있습니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 코드의 유지보수성 및 확장성을 고려한 컴포넌트 설계
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+이 프로젝트는 다음과 같은 설계 원칙을 적용하여 코드의 유지보수성과 확장성을 높였습니다:
 
-## Learn More
+1. **컴포넌트 계층 구조**
+   - 프레젠테이션 컴포넌트와 컨테이너 컴포넌트 분리
+   - 작은 단위의 독립적인 컴포넌트로 분할하여 재사용성 향상
 
-To learn more about Next.js, take a look at the following resources:
+2. **관심사 분리**
+   - UI, 비즈니스 로직, 상태 관리를 명확히 분리
+   - `entities/`는 순수 UI 컴포넌트, `features/`는 비즈니스 로직 포함 컴포넌트로 구분
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **타입 시스템 활용**
+   - TypeScript 인터페이스와 타입을 통한 명확한 계약 정의
+   - 컴포넌트 Props와 상태에 대한 엄격한 타입 검사로 런타임 오류 방지
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **확장 가능한 설계**
+   - 새로운 질문 유형이나 기능을 쉽게 추가할 수 있는 유연한 구조
+   - 추상화 계층을 통한 구현 세부 사항 은닉
 
-## Deploy on Vercel
+5. **테스트 용이성**
+   - 컴포넌트 단위 테스트를 쉽게 작성할 수 있는 구조
+   - 종속성 주입을 통한 테스트 가능성 향상
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 페이지별 기능명세서
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 홈페이지 (/)
+- 설문지 목록 표시
+- 최근 생성일 및 키워드 기반 검색 기능
+- 설문지 생성, 수정, 삭제 기능
+- 설문지 참여 기능
+
+### 설문지 편집 페이지 (/editor/[id])
+- 설문지 제목 및 설명 편집
+- 질문 추가, 수정, 삭제, 복사 기능
+- 다양한 질문 유형 지원 (단답형, 장문형, 라디오, 체크박스, 드롭다운)
+- 질문 옵션 추가, 수정, 삭제, 순서 변경 기능
+- 로컬스토리지를 활용한 자동 저장 기능
+
+### 설문지 응답 페이지 (/[id])
+- 설문지 내용 및 질문 표시
+- 응답 입력 및 제출 기능
+- 필수 질문 검증 기능
+
+## 주요 기능
+
+1. **설문지 관리**
+   - 설문지 생성, 수정, 삭제
+   - 로컬스토리지를 활용한 데이터 저장
+   
+2. **질문 유형**
+   - 단답형 (text)
+   - 장문형 (textarea)
+   - 단일 선택 (radio)
+   - 다중 선택 (checkbox)
+   - 드롭다운 (select)
+
+3. **편집 기능**
+   - 텍스트 에디터 (굵게, 기울임, 밑줄, 링크)
+   - 드래그 앤 드롭으로 옵션 순서 변경
+   - 설명 추가/감추기
+   - 필수 질문 설정
+
+4. **검색 및 필터링**
+   - 키워드 검색
+   - 생성일 기반 필터링 (전체, 최근 7일, 최근 30일)
+
+## 성능 최적화
+
+이 애플리케이션은 다음과 같은 성능 최적화 기술을 적용하여 사용자 경험을 향상시켰습니다:
+
+1. **메모이제이션 기술**
+   - `useMemo`와 `useCallback` 훅을 활용하여 불필요한 함수 재생성 및 계산 방지
+   - 특히 `Select` 컴포넌트와 `QuestionList`에서 의존성 배열 안정화로 리렌더링 최소화
+
+2. **효율적인 상태 관리**
+   - 로컬 스토리지 저장 작업에 디바운스 적용 (최소 10초 간격)
+   - 로컬 스토리지 저장 시 불필요한 JSON 변환 최소화
+
+3. **DOM 조작 최적화**
+   - `TextEditor` 컴포넌트에서 참조 관리를 통한 불필요한 DOM 조작 방지
+   - 드래그 앤 드롭 기능 구현 시 이벤트 핸들러 최적화
+
+4. **렌더링 성능**
+   - 조건부 렌더링을 통한 불필요한 컴포넌트 렌더링 방지
+   - `useEffect` 의존성 배열 최적화로 불필요한 부수 효과 방지
+
+5. **이벤트 핸들링 최적화**
+   - 이벤트 위임(Event Delegation) 패턴 적용
+   - 키보드 이벤트 핸들링 최적화
+
+6. **타입 안정성 개선**
+   - TypeScript 타입 정의 개선으로 런타임 오류 방지
+   - 컴파일 타임 검증 강화
+
+## 에러 처리(Exception Handling)
+
+이 애플리케이션은 다양한 예외 상황을 효과적으로 처리하여 안정성과 사용자 경험을 향상시켰습니다:
+
+1. **React 컴포넌트 에러 처리**
+   - ErrorBoundary 클래스 컴포넌트를 활용한 React 렌더링 오류 포착
+   - 컴포넌트 트리의 오류가 전체 애플리케이션에 영향을 미치지 않도록 격리
+   - 로컬 스토리지에 오류 정보 로깅으로 디버깅 용이성 향상
+
+2. **로컬 스토리지 예외 처리**
+   - `saveToLocalStorage` 유틸리티 함수를 통한 일관된 저장 메커니즘
+   - 스토리지 용량 초과 시 사용자 친화적인 에러 메시지 표시
+   - 데이터 손실 없이 복구 가능한 방식으로 설계
+
+3. **유효성 검증**
+   - 설문지 저장 및 제출 시 필수 입력 항목 검증
+   - 질문 유형별 적절한 응답 형식 검증
+   - 유효하지 않은 입력에 대한 시각적 피드백 제공
+
+4. **라우팅 및 매개변수 검증**
+   - 잘못된 ID 값이나 존재하지 않는 설문지 접근 시 적절한 처리
+   - 유효하지 않은 페이지 접근 시 홈페이지로 리디렉션
+   - URL 파라미터 검증을 통한 보안 강화
+
+5. **네트워크 및 비동기 처리**
+   - Promise 관련 오류 포착 및 로깅
+   - 비동기 작업 실패 시 자동 재시도 메커니즘
+   - 사용자에게 명확한 오류 상황 설명 제공
+
+6. **전역 오류 처리**
+   - 미처리 예외를 포착하는 전역 이벤트 리스너 구현
+   - 개발 환경과 프로덕션 환경에 따른 차별화된 오류 처리
+
+## 사용한 주요 외부 라이브러리 및 오픈 소스
+
+| 라이브러리 | 버전 | 사용 목적 |
+|------------|------|-----------|
+| Next.js | 15.2.0 | 페이지 라우팅 및 서버 사이드 렌더링 |
+| React | 19.0.0 | UI 컴포넌트 구축 |
+| TypeScript | 5.x | 타입 안정성 확보 |
+| Tailwind CSS | 4.x | UI 스타일링 |
+| tailwind-merge | 3.0.2 | 조건부 Tailwind 클래스 병합 |
+| Jest | 29.7.0 | 단위 테스트 |
+| React Testing Library | 16.2.0 | 컴포넌트 테스트 |
+
+## 애플리케이션 동작에 필요한 주요 설정과 실행 방법
+
+### 요구 사항
+- Node.js 18 이상
+- npm 또는 yarn
+
+1. **의존성 설치**: 프로젝트 루트 디렉토리에서 다음 명령어를 실행하여 필요한 패키지를 설치합니다.
+   ```bash
+   npm install
+   ```
+
+2. **개발 서버 실행**: 다음 명령어를 사용하여 개발 서버를 시작합니다.
+   ```bash
+   npm run dev
+   ```
+
+3. **테스트 실행**: Jest를 이용한 테스트 실행
+   ```bash
+   npm run test
+   ```
+
+## 특이사항
+
+- 이 애플리케이션은 서버가 필요 없이 클라이언트 측에서 모든 데이터를 로컬스토리지에 저장합니다.
+- React 19와 Next.js 15.2.0을 사용하는 최신 버전의 애플리케이션입니다.

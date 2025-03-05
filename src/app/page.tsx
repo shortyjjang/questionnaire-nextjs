@@ -1,101 +1,119 @@
-import Image from "next/image";
-
+"use client";
+import Button from "@/entities/Button";
+import QuestionItem from "@/features/List/QuestionItem";
+import Search from "@/features/List/Search";
+import { saveToLocalStorage } from "@/lib/saveToLocalStorage";
+import { QuestionListType } from "@/type";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+// Lazy Loading으로 로컬스토리지 데이터 불러오기
+const getLocalTemplates = async () => {
+  return new Promise<QuestionListType[]>((resolve) => {
+    setTimeout(() => {
+      const localTemplates = JSON.parse(
+        localStorage.getItem("templates") || "[]"
+      );
+      resolve(localTemplates);
+    }, 0); // 비동기 처리로 렌더링 차단 방지
+  });
+};
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [templates, setTemplates] = useState<QuestionListType[]>([]);
+  const router = useRouter();
+  const [keyword, setKeyword] = useState("");
+  const [createdAt, setCreatedAt] = useState("all");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  //검색 필터
+  const filterTemplates = useCallback(
+    (templates: QuestionListType[]) => {
+      return templates.filter((template) =>
+        keyword || createdAt !== "all"
+          ? (keyword ? template.title.includes(keyword) : true) &&
+            (createdAt === "all"
+              ? true
+              : new Date(template.createdAt).getTime() >
+                new Date().getTime() -
+                  (createdAt === "7"
+                    ? oneWeek
+                    : createdAt === "30"
+                    ? oneMonth
+                    : 0))
+          : true
+      );
+    },
+    [createdAt, keyword]
+  );
+
+  // 필터링된 결과를 useMemo로 최적화
+  const filteredTemplates = useMemo(
+    () => filterTemplates(templates),
+    [templates, filterTemplates]
+  );
+
+  //삭제
+  const handleDeleteTemplate = (id: string) => {
+    if (!confirm("삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.")) return;
+    const newTemplates = templates.filter((t) => t.id !== id);
+    if (saveToLocalStorage("templates", newTemplates)) {
+      localStorage.removeItem("template" + id);
+      setTemplates(newTemplates);
+    }
+  };
+
+  // Lazy Loading으로 로컬스토리지 데이터 가져오기
+  useEffect(() => {
+    getLocalTemplates().then(setTemplates);
+  }, []);
+  return (
+    <>
+      <div className="sticky top-0 left-0 w-full py-4 bg-white">
+        <div className="flex items-center justify-between mx-auto max-w-screen-lg">
+          <h1 className="text-2xl font-bold">설문지 목록</h1>
+          <div className="flex items-center gap-4">
+            <Search
+              createdAt={createdAt}
+              keyword={keyword}
+              setCreatedAt={setCreatedAt}
+              setKeyword={setKeyword}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <Button
+              variant="primary"
+              onClick={() =>
+                router.push("/editor/" + new Date().getTime().toString(), {
+                  scroll: false,
+                })
+              }
+            >
+              + 새로 만들기
+            </Button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+      <div className="mt-4 flex flex-col gap-4 mx-auto max-w-screen-lg">
+        {templates.length > 0 ? (
+          filteredTemplates.length > 0 ? (
+            filteredTemplates.map((template) => (
+              <QuestionItem
+                key={template.id}
+                template={template}
+                onDelete={() => handleDeleteTemplate(template.id)}
+              />
+            ))
+          ) : (
+            <div className="py-5 text-center text-gray-500">
+              검색 결과가 없습니다.
+            </div>
+          )
+        ) : (
+          <div className="py-5 text-center text-gray-500">
+            설문지가 없습니다.
+          </div>
+        )}
+      </div>
+    </>
   );
 }
+
+const oneDay = 24 * 60 * 60 * 1000;
+const oneWeek = 7 * oneDay;
+const oneMonth = 30 * oneDay;
