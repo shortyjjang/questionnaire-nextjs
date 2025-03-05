@@ -3,7 +3,8 @@ import { useDetailProvider } from "@/features/Detail";
 import { useRouter } from "next/navigation";
 import Button from "@/entities/Button";
 import { twMerge } from "tailwind-merge";
-import { saveToLocalStorage } from "@/lib/saveToLocalStorage";
+import { saveToLocalStorageImmediately } from "@/lib/saveToLocalStorage";
+
 export default function DetailHeader() {
   const router = useRouter();
   const { template, setIsEditMode, isEditMode } = useDetailProvider();
@@ -49,11 +50,12 @@ export default function DetailHeader() {
         : localTemplates.map((t: any) =>
             t.id === template.id ? updatedTemplate : t
           );
-    if (saveToLocalStorage("templates", newTemplates)) {
-      saveToLocalStorage("template" + template.id, template);
+    if (saveToLocalStorageImmediately("templates", newTemplates)) {
+      if(saveToLocalStorageImmediately("template" + template.id, template)) {
+        router.push("/");
+      }
     }
 
-    router.push("/");
   };
 
   // 삭제
@@ -62,7 +64,7 @@ export default function DetailHeader() {
     const localTemplates = JSON.parse(
       localStorage.getItem("templates") || "[]"
     );
-    if (saveToLocalStorage("templates", localTemplates.filter((t: any) => t.id !== template.id))) {
+    if (saveToLocalStorageImmediately("templates", localTemplates.filter((t: any) => t.id !== template.id))) {
       localStorage.removeItem("template" + template.id);
       router.push("/");
     }
@@ -71,7 +73,7 @@ export default function DetailHeader() {
   return (
     <div className="sticky top-0 z-10 bg-white border-b border-gray-200 py-2">
       <div className="flex justify-between items-center gap-4 max-w-screen-lg mx-auto px-4">
-        <h1 className="text-2xl font-bold whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: template.title }} />
+        <h1 className="text-2xl font-bold whitespace-pre-wrap line-clamp-1" dangerouslySetInnerHTML={{ __html: template.title }} />
         {isEditMode ?<div className="flex gap-4 items-center md:flex-row-reverse">
           <div className="flex gap-2">
             <Button

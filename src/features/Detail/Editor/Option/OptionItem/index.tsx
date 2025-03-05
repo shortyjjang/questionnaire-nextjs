@@ -29,14 +29,14 @@ export default function OptionItem({
     }) : it) }));
   };
   // 옵션 추가
-  const addOption = () => {
-    if (!draggable) {
-      const lastChild = document.getElementById(focusId + (items.length - 1));
-      setItems((prev) => [...prev, { id: focusId + items.length, content: "" }]);
-      if (lastChild) {
-        lastChild.focus();
-      }
-    }
+  const addOption = (index: number) => {
+      setItems((prev) => [...prev, { id: focusId + index, content: "" }]);
+      setTimeout(() => {
+        const lastChild = document.getElementById(focusId + index);
+        if (lastChild) {
+          lastChild.focus();
+        }
+      }, 100);
   }
   return (
     <div
@@ -62,7 +62,7 @@ export default function OptionItem({
         className={draggable ? "flex-1" : "w-fit"}
         value={item.content}
         readOnly={!draggable}
-        onFocus={addOption}
+        onFocus={!draggable ? () => addOption(index) : undefined}
         id={focusId + index}
         onChange={(e) => handleChange(e, index)}
         placeholder="옵션 추가"

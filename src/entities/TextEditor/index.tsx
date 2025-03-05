@@ -23,6 +23,7 @@ const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
     useLayoutEffect(() => {
       if (editorRef.current && value !== undefined) {
         editorRef.current.innerHTML = value;
+        setContent(value.trim());
       }
     }, [value]);
 

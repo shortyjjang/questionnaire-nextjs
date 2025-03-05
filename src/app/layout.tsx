@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "@/assets/styles/globals.css";
 import ErrorHandler from "./ErrorBoundary";
 
 const geistSans = Geist({
@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "ONJ - Templates for User",
   description: "사용자별 맞춤 템플릿",
+  icons: {
+    icon: "/favicon.webp",
+  },
 };
 
 export default function RootLayout({

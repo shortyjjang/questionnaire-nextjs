@@ -58,7 +58,7 @@ export default function DetailPage() {
     <>
       <div className="sticky top-0 z-10 bg-white border-b border-gray-200 py-2">
         <div className="flex justify-between items-center gap-4 max-w-screen-lg mx-auto px-4">
-          <h1 className="text-2xl font-bold">{template.title}</h1>
+          <h1 className="text-2xl font-bold whitespace-pre-wrap line-clamp-1" dangerouslySetInnerHTML={{ __html: template.title }} />
           <Button variant="primary" onClick={handleSubmit}>제출</Button>
         </div>
       </div>

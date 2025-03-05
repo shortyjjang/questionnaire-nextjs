@@ -2,7 +2,7 @@
 import Button from "@/entities/Button";
 import QuestionItem from "@/features/List/QuestionItem";
 import Search from "@/features/List/Search";
-import { saveToLocalStorage } from "@/lib/saveToLocalStorage";
+import { saveToLocalStorageImmediately } from "@/lib/saveToLocalStorage";
 import { QuestionListType } from "@/type";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -13,7 +13,7 @@ const getLocalTemplates = async () => {
       const localTemplates = JSON.parse(
         localStorage.getItem("templates") || "[]"
       );
-      resolve(localTemplates);
+      resolve(localTemplates.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
     }, 0); // 비동기 처리로 렌더링 차단 방지
   });
 };
@@ -54,7 +54,7 @@ export default function Home() {
   const handleDeleteTemplate = (id: string) => {
     if (!confirm("삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.")) return;
     const newTemplates = templates.filter((t) => t.id !== id);
-    if (saveToLocalStorage("templates", newTemplates)) {
+    if (saveToLocalStorageImmediately("templates", newTemplates)) {
       localStorage.removeItem("template" + id);
       setTemplates(newTemplates);
     }
@@ -62,6 +62,7 @@ export default function Home() {
 
   // Lazy Loading으로 로컬스토리지 데이터 가져오기
   useEffect(() => {
+    console.log("templates", templates);
     getLocalTemplates().then(setTemplates);
   }, []);
   return (
