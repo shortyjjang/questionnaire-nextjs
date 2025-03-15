@@ -102,7 +102,8 @@ export default function QuestionViewer({
                 <div key={option.id}>
                   {question.type === "radio" ? (
                     <Radio
-                      value={question.id}
+                      value={option.id}
+                      checked={question.answer === option.id}
                       onChange={(e) =>
                         setTemplate((prev) => ({
                           ...prev,
@@ -113,7 +114,6 @@ export default function QuestionViewer({
                           ),
                         }))
                       }
-                      checked={question.answer === option.id}
                       aria-label={question.required ? "필수 질문" : undefined}
                       name={question.id}
                       label={option.content}

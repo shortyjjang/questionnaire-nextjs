@@ -38,18 +38,32 @@ export default function useDragging<T>(initialItems: T[]) {
   }, []);
 
   const handleDragEnd = useCallback(() => {
+    
     if (dragItem.current === null || dragOverItem.current === null) return;
-    if (dragItem.current !== dragOverItem.current) {
+    
+    // ref 값을 임시 변수에 저장
+    const dragIndex = dragItem.current;
+    const dropIndex = dragOverItem.current;
+    
+    if (dragIndex !== dropIndex) {
       setItems((prevItems) => {
         const newItems = [...prevItems];
-        const draggedItem = newItems.splice(dragItem.current!, 1)[0];
-        newItems.splice(dragOverItem.current!, 0, draggedItem);
+        const itemToMove = newItems[dragIndex];
+        
+        if (itemToMove) {
+          newItems.splice(dragIndex, 1);
+          newItems.splice(dropIndex, 0, itemToMove);
+        }
+        
         return newItems;
       });
     }
+    
+    // ref 초기화는 상태 업데이트 후에 수행
     dragItem.current = null;
     dragOverItem.current = null;
-  }, []);
+    setDraggingStyle(initialDraggingStyle);
+  }, [items]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent, index: number) => {
     touchStartY.current = e.touches[0].clientY;
@@ -91,17 +105,22 @@ export default function useDragging<T>(initialItems: T[]) {
 
   const handleTouchEnd = useCallback(() => {
     if (dragItem.current !== null && dragOverItem.current !== null) {
-      if (dragItem.current !== dragOverItem.current) {
-        setItems((prevItems) => {
-          const newItems = [...prevItems];
-          const draggedItem = newItems.splice(dragItem.current!, 1)[0];
-          newItems.splice(dragOverItem.current!, 0, draggedItem);
-          return newItems;
-        });
-      }
+      setItems((prevItems) => {
+        const newItems = [...prevItems];
+        const itemToMove = newItems[dragItem.current!];
+        
+        if (itemToMove && dragItem.current !== dragOverItem.current) {
+          newItems.splice(dragItem.current!, 1);
+          newItems.splice(dragOverItem.current!, 0, itemToMove);
+        }
+        
+        return newItems;
+      });
     }
+    
     dragItem.current = null;
     dragOverItem.current = null;
+    setDraggingStyle(initialDraggingStyle);
   }, []);
 
   useEffect(() => {

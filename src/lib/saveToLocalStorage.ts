@@ -13,6 +13,7 @@ export const saveToLocalStorage = (key: string, data: any, delay = DEFAULT_DEBOU
     // 새로운 타이머 설정
     debounceTimers[key] = setTimeout(() => {
       try {
+        console.log("saveToLocalStorage", key, data);
         localStorage.setItem(key, JSON.stringify(data));
         // 타이머 참조 제거
         delete debounceTimers[key];
@@ -45,7 +46,7 @@ export const saveToLocalStorageImmediately = (key: string, data: any) => {
       clearTimeout(debounceTimers[key]);
       delete debounceTimers[key];
     }
-    
+    console.log("saveToLocalStorageImmediately", key, data);
     localStorage.setItem(key, JSON.stringify(data));
     return true;
   } catch (error) {
